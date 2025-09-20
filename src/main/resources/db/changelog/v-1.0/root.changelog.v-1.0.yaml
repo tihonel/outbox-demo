@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      relativeToChangelogFile: true
+      file: create-user-table.sql
+  - include:
+      relativeToChangelogFile: true
+      file: create-outbox-table.sql
