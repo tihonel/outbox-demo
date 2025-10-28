@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class OutboxService {
 
             var outboxMessage = OutboxEntry.builder()
                     .payload(new ObjectMapper().writeValueAsString(event))
-                    .status(OutboxEntryStatus.IN_PROGRESS)
+                    .status(OutboxEntryStatus.PENDING)
                     .eventType(eventType)
                     .timeToSend(Instant.now()).build();
 
@@ -36,5 +37,12 @@ public class OutboxService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Transactional
+    public List<OutboxEntry> getOutboxMessagesInPendingForProcessing() {
+        List<OutboxEntry> entries = outboxEntryRepository.findAndSkipLockedMessages(10);
+        entries.forEach(x -> x.setStatus(OutboxEntryStatus.IN_PROGRESS));
+        return entries;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface OutboxEntryRepository extends JpaRepository<OutboxEntry, Long> {
     @Query(
-            value = "SELECT * FROM outbox o WHERE o.status = 'IN_PROGRESS' and " +
+            value = "SELECT * FROM outbox o WHERE o.status = 'PENDING' and " +
                     "o.time_to_send <= now() " +
                     "ORDER BY o.time_to_send desc " +
                     "LIMIT :limit FOR UPDATE SKIP LOCKED",

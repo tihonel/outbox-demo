@@ -83,7 +83,7 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
 
         OutboxEntry outboxEntry = outboxEntryRepository.findAll().stream().findFirst().get();
 
-        assertEquals(OutboxEntryStatus.IN_PROGRESS, outboxEntry.getStatus());
+        assertEquals(OutboxEntryStatus.PENDING, outboxEntry.getStatus());
 
         log.info("wait fulling events");
         await().atMost(1, TimeUnit.MINUTES).until(
