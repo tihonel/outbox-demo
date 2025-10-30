@@ -5,6 +5,6 @@ CREATE SEQUENCE user_id_seq
 
 CREATE TABLE user_table
 (
-    id                 BIGINT DEFAULT nextval('user_id_seq') PRIMARY KEY,
-    username             VARCHAR           NOT NULL
+    id       BIGINT DEFAULT nextval('user_id_seq') PRIMARY KEY,
+    username VARCHAR NOT NULL
 );

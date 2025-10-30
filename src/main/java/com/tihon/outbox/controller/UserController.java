@@ -1,6 +1,6 @@
 package com.tihon.outbox.controller;
 
-import com.tihon.outbox.dto.UserDto;
+import com.tihon.outbox.dto.UserDtoWithoutId;
 import com.tihon.outbox.mapper.UserMapper;
 import com.tihon.outbox.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,27 +22,14 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
-        try {
-            var user = userService.createUser(userMapper.userDtoToUser(userDto));
-            return ResponseEntity.ok(userMapper.userToUserDto(user));
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
+    public ResponseEntity<?> createUser(@RequestBody UserDtoWithoutId userDtoWithoutId) {
+        var user = userService.createUser(userMapper.userDtoWithoutIdToUser(userDtoWithoutId, null));
+        return ResponseEntity.ok(userMapper.userToUserDto(user));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody UserDto userDto) {
-        try {
-            userDto.setId(id);
-            var user = userService.updateUser(userMapper.userDtoToUser(userDto));
-            return ResponseEntity.ok(userMapper.userToUserDto(user));
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
+    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody UserDtoWithoutId userDtoWithoutId) {
+        var user = userService.updateUser(userMapper.userDtoWithoutIdToUser(userDtoWithoutId, id));
+        return ResponseEntity.ok(userMapper.userToUserDto(user));
     }
 }
