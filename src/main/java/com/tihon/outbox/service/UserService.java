@@ -1,10 +1,8 @@
 package com.tihon.outbox.service;
 
 import com.tihon.outbox.events.EventType;
-import com.tihon.outbox.events.UpdateUserEvent;
 import com.tihon.outbox.exception.CreateUserException;
 import com.tihon.outbox.exception.UpdateUserException;
-import com.tihon.outbox.mapper.UserMapper;
 import com.tihon.outbox.model.User;
 import com.tihon.outbox.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,12 +12,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final OutboxService outboxService;
 
+    @Transactional
     public User createUser(User user) {
         try {
             return userRepository.save(user);
@@ -29,6 +27,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public User updateUser(User user) {
         try {
             User updatedUser = userRepository.save(user);

@@ -12,7 +12,7 @@ public interface OutboxEntryRepository extends JpaRepository<OutboxEntry, Long> 
     @Query(
             value = "SELECT * FROM outbox o WHERE o.status = 'PENDING' and " +
                     "o.time_to_send <= now() " +
-                    "ORDER BY o.time_to_send desc " +
+                    "ORDER BY o.time_to_send " +
                     "LIMIT :limit FOR UPDATE SKIP LOCKED",
             nativeQuery = true
     )

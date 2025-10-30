@@ -19,7 +19,7 @@ public class OutboxChecker {
     private final OutboxService outboxService;
     private final Map<EventType, EventProcessor> processors;
 
-    @Async("forOutbox")
+    @Async("outboxThreadPool")
     @Scheduled(fixedRateString = "${outbox.period}", timeUnit = TimeUnit.SECONDS)
     public void takeMessagesInPendingAndProcessing() {
         List<OutboxEntry> outboxEntryList = outboxService.getOutboxMessagesInPendingForProcessing();
