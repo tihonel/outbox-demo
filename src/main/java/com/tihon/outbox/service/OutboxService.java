@@ -27,7 +27,7 @@ public class OutboxService {
     @Transactional
     public List<OutboxEntry> getOutboxMessagesInPendingForProcessing() {
         List<OutboxEntry> entries = outboxEntryRepository.findAndSkipLockedMessages(10);
-        entries.forEach(x -> x.setStatus(OutboxEntryStatus.IN_PROGRESS));
+        entries.forEach(x -> x.setStatus(OutboxEntryStatus.RUNNING));
         return entries;
     }
 }

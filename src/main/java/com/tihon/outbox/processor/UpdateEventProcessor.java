@@ -1,6 +1,7 @@
 package com.tihon.outbox.processor;
 
 import com.tihon.outbox.exception.UnsuccessfulSendEventToKafka;
+import com.tihon.outbox.model.EventType;
 import com.tihon.outbox.model.OutboxEntry;
 import com.tihon.outbox.model.OutboxEntryPayload;
 import com.tihon.outbox.model.OutboxEntryStatus;
@@ -30,7 +31,7 @@ public class UpdateEventProcessor implements EventProcessor {
     public void execute(OutboxEntry outboxEntry) {
         try {
             kafkaTemplate.send(updateTopic, outboxEntry.getPayload().userId().toString(), outboxEntry.getPayload());
-            outboxEntry.setStatus(OutboxEntryStatus.COMPLETED);
+            outboxEntry.setStatus(OutboxEntryStatus.DONE);
             outboxEntryRepository.save(outboxEntry);
         } catch (Exception e) {
             outboxEntry.setTimeToSend(Instant.now().plus(outboxPeriod, ChronoUnit.SECONDS));
@@ -38,5 +39,10 @@ public class UpdateEventProcessor implements EventProcessor {
             log.error("Failed to send event to kafka. Event {} ", outboxEntry.getPayload(), e);
             throw new UnsuccessfulSendEventToKafka(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public boolean supports(EventType eventType) {
+        return eventType == EventType.UPDATE_USER_DATA;
     }
 }

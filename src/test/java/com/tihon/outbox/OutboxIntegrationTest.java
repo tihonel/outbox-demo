@@ -89,6 +89,6 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
 
         outboxEntry = outboxEntryRepository.findById(outboxEntry.getId()).get();
 
-        assertEquals(OutboxEntryStatus.COMPLETED, outboxEntry.getStatus());
+        assertEquals(OutboxEntryStatus.DONE, outboxEntry.getStatus());
     }
 }
