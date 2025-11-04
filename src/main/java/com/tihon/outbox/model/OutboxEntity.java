@@ -28,7 +28,7 @@ import java.time.Instant;
 @Builder
 @ToString
 @EqualsAndHashCode
-public class OutboxEntry {
+public class OutboxEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "outbox_seq")
     @SequenceGenerator(name = "outbox_seq", sequenceName = "outbox_id_seq", allocationSize = 10)
@@ -36,11 +36,11 @@ public class OutboxEntry {
 
     @Type(JsonType.class)
     @Column(name = "payload", columnDefinition = "jsonb")
-    private OutboxEntryPayload payload;
+    private OutboxEntityPayload payload;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private OutboxEntryStatus status;
+    private OutboxEntityStatus status;
 
     @Column(name = "time_to_send")
     private Instant timeToSend;

@@ -2,10 +2,10 @@ package com.tihon.outbox.processor;
 
 import com.tihon.outbox.exception.UnsuccessfulSendEventToKafka;
 import com.tihon.outbox.model.EventType;
-import com.tihon.outbox.model.OutboxEntry;
-import com.tihon.outbox.model.OutboxEntryPayload;
-import com.tihon.outbox.model.OutboxEntryStatus;
-import com.tihon.outbox.repository.OutboxEntryRepository;
+import com.tihon.outbox.model.OutboxEntity;
+import com.tihon.outbox.model.OutboxEntityPayload;
+import com.tihon.outbox.model.OutboxEntityStatus;
+import com.tihon.outbox.repository.OutboxEntityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,20 +23,20 @@ public class UpdateEventProcessor implements EventProcessor {
     private String updateTopic;
     @Value("${outbox.period}")
     private int outboxPeriod;
-    private final KafkaTemplate<String, OutboxEntryPayload> kafkaTemplate;
-    private final OutboxEntryRepository outboxEntryRepository;
+    private final KafkaTemplate<String, OutboxEntityPayload> kafkaTemplate;
+    private final OutboxEntityRepository outboxEntityRepository;
 
     @Override
     @Transactional
-    public void execute(OutboxEntry outboxEntry) {
+    public void execute(OutboxEntity outboxEntity) {
         try {
-            kafkaTemplate.send(updateTopic, outboxEntry.getPayload().userId().toString(), outboxEntry.getPayload());
-            outboxEntry.setStatus(OutboxEntryStatus.DONE);
-            outboxEntryRepository.save(outboxEntry);
+            kafkaTemplate.send(updateTopic, outboxEntity.getPayload().userId().toString(), outboxEntity.getPayload());
+            outboxEntity.setStatus(OutboxEntityStatus.DONE);
+            outboxEntityRepository.save(outboxEntity);
         } catch (Exception e) {
-            outboxEntry.setTimeToSend(Instant.now().plus(outboxPeriod, ChronoUnit.SECONDS));
-            outboxEntryRepository.save(outboxEntry);
-            log.error("Failed to send event to kafka. Event {} ", outboxEntry.getPayload(), e);
+            outboxEntity.setTimeToSend(Instant.now().plus(outboxPeriod, ChronoUnit.SECONDS));
+            outboxEntityRepository.save(outboxEntity);
+            log.error("Failed to send event to kafka. Event {} ", outboxEntity.getPayload(), e);
             throw new UnsuccessfulSendEventToKafka(e.getMessage(), e);
         }
     }

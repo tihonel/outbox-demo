@@ -2,14 +2,14 @@ package com.tihon.outbox.mapper;
 
 import com.tihon.outbox.dto.UserDto;
 import com.tihon.outbox.dto.UserDtoWithoutId;
-import com.tihon.outbox.model.User;
+import com.tihon.outbox.model.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
-    UserDto userToUserDto(User user);
+    UserDto userToUserDto(UserEntity userEntity);
     @Mapping(target = "id", source = "id")
-    User userDtoWithoutIdToUser(UserDtoWithoutId userDto, Long id);
+    UserEntity userDtoWithoutIdToUser(UserDtoWithoutId userDto, Long id);
 }

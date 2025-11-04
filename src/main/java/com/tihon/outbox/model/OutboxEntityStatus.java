@@ -1,6 +1,6 @@
 package com.tihon.outbox.model;
 
-public enum OutboxEntryStatus {
+public enum OutboxEntityStatus {
     PENDING,
     RUNNING,
     DONE

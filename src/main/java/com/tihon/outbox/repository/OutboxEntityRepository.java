@@ -1,12 +1,12 @@
 package com.tihon.outbox.repository;
 
-import com.tihon.outbox.model.OutboxEntry;
+import com.tihon.outbox.model.OutboxEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
 
-public interface OutboxEntryRepository extends JpaRepository<OutboxEntry, Long> {
+public interface OutboxEntityRepository extends JpaRepository<OutboxEntity, Long> {
     @Query(
             value = "SELECT * FROM outbox o WHERE o.status = 'PENDING' and " +
                     "o.time_to_send <= now() " +
@@ -14,5 +14,5 @@ public interface OutboxEntryRepository extends JpaRepository<OutboxEntry, Long> 
                     "LIMIT :limit FOR UPDATE SKIP LOCKED",
             nativeQuery = true
     )
-    List<OutboxEntry> findAndSkipLockedMessages(@Param("limit") int limit);
+    List<OutboxEntity> findAndSkipLockedMessages(@Param("limit") int limit);
 }

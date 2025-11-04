@@ -1,6 +1,6 @@
 package com.tihon.outbox.scheduler;
 
-import com.tihon.outbox.model.OutboxEntry;
+import com.tihon.outbox.model.OutboxEntity;
 import com.tihon.outbox.processor.EventProcessor;
 import com.tihon.outbox.service.OutboxService;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +19,17 @@ public class OutboxChecker {
 
     @Scheduled(fixedRateString = "${quantityMessagesForProcess}", timeUnit = TimeUnit.SECONDS)
     public void takeMessagesInPendingAndProcessing() {
-        List<OutboxEntry> outboxEntryList = outboxService.getOutboxMessagesInPendingForProcessing();
-        outboxEntryList.forEach(this::processOutboxMessage);
+        List<OutboxEntity> outboxEntityList = outboxService.getOutboxMessagesInPendingForProcessing();
+        outboxEntityList.forEach(this::processOutboxMessage);
     }
 
-    private void processOutboxMessage(OutboxEntry outboxEntry) {
+    private void processOutboxMessage(OutboxEntity outboxEntity) {
         processors.stream()
-                .filter(x -> x.supports(outboxEntry.getEventType()))
+                .filter(x -> x.supports(outboxEntity.getEventType()))
                 .findFirst()
                 .ifPresent(x -> {
                     try {
-                        x.execute(outboxEntry);
+                        x.execute(outboxEntity);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }

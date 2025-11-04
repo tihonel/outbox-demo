@@ -4,11 +4,11 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import com.tihon.outbox.containers.KafkaPostgresContainer;
-import com.tihon.outbox.model.OutboxEntry;
-import com.tihon.outbox.model.OutboxEntryPayload;
-import com.tihon.outbox.model.OutboxEntryStatus;
-import com.tihon.outbox.model.User;
-import com.tihon.outbox.repository.OutboxEntryRepository;
+import com.tihon.outbox.model.OutboxEntity;
+import com.tihon.outbox.model.OutboxEntityPayload;
+import com.tihon.outbox.model.OutboxEntityStatus;
+import com.tihon.outbox.model.UserEntity;
+import com.tihon.outbox.repository.OutboxEntityRepository;
 import com.tihon.outbox.repository.UserRepository;
 import com.tihon.outbox.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +33,12 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    OutboxEntryRepository outboxEntryRepository;
+    OutboxEntityRepository outboxEntityRepository;
 
-    private static final List<OutboxEntryPayload> events = new ArrayList<>();
+    private static final List<OutboxEntityPayload> events = new ArrayList<>();
 
     @KafkaListener(topics = "${kafka.updateTopic}", groupId = "outboxTest")
-    void listen(OutboxEntryPayload payload) {
+    void listen(OutboxEntityPayload payload) {
         log.info("input: {}", payload.toString());
         events.add(payload);
         log.info("events size: {}", events.size());
@@ -48,34 +48,34 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
     @Test
     public void testCreateUser() {
         //given
-        User user = new User();
-        user.setUsername("gaga");
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("gaga");
 
         //when
-        Long userCreatedId = userService.createUser(user).getId();
+        Long userCreatedId = userService.createUser(userEntity).getId();
 
         //then
         var userCreated = userRepository.findById(userCreatedId).get();
 
-        assertEquals(user, userCreated);
+        assertEquals(userEntity, userCreated);
     }
 
     @Order(2)
     @Test
     public void testUpdateUser() {
         //given
-        User existingUser = userRepository.findAll(PageRequest.of(0, 1)).stream().findFirst().get();
+        UserEntity existingUserEntity = userRepository.findAll(PageRequest.of(0, 1)).stream().findFirst().get();
 
         //when
-        existingUser.setUsername("abracadabra");
-        userService.updateUser(existingUser);
+        existingUserEntity.setUsername("abracadabra");
+        userService.updateUser(existingUserEntity);
 
         //then
         await().atMost(1, TimeUnit.MINUTES).until(
-                () -> !outboxEntryRepository.findAll().isEmpty()
+                () -> !outboxEntityRepository.findAll().isEmpty()
         );
 
-        OutboxEntry outboxEntry = outboxEntryRepository.findAll().stream().findFirst().get();
+        OutboxEntity outboxEntity = outboxEntityRepository.findAll().stream().findFirst().get();
 
         log.info("wait fulling events");
         await().atMost(1, TimeUnit.MINUTES).until(
@@ -84,11 +84,11 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
         log.info("events not empty: {}", events.size());
 
 
-        assertEquals(events.get(0).userId(), existingUser.getId());
-        assertEquals(events.get(0).changes().get("username"), existingUser.getUsername());
+        assertEquals(events.get(0).userId(), existingUserEntity.getId());
+        assertEquals(events.get(0).changes().get("username"), existingUserEntity.getUsername());
 
-        outboxEntry = outboxEntryRepository.findById(outboxEntry.getId()).get();
+        outboxEntity = outboxEntityRepository.findById(outboxEntity.getId()).get();
 
-        assertEquals(OutboxEntryStatus.DONE, outboxEntry.getStatus());
+        assertEquals(OutboxEntityStatus.DONE, outboxEntity.getStatus());
     }
 }
