@@ -1,9 +1,8 @@
 package com.tihon.outbox.processor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tihon.outbox.events.UpdateUserEvent;
 import com.tihon.outbox.exception.UnsuccessfulSendEventToKafka;
 import com.tihon.outbox.model.OutboxEntry;
+import com.tihon.outbox.model.OutboxEntryPayload;
 import com.tihon.outbox.model.OutboxEntryStatus;
 import com.tihon.outbox.repository.OutboxEntryRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +22,14 @@ public class UpdateEventProcessor implements EventProcessor {
     private String updateTopic;
     @Value("${outbox.period}")
     private int outboxPeriod;
-    private final ObjectMapper mapper;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, OutboxEntryPayload> kafkaTemplate;
     private final OutboxEntryRepository outboxEntryRepository;
 
     @Override
     @Transactional
     public void execute(OutboxEntry outboxEntry) {
         try {
-            mapper.readValue(outboxEntry.getPayload(), UpdateUserEvent.class);
-            kafkaTemplate.send(updateTopic, outboxEntry.getPayload());
+            kafkaTemplate.send(updateTopic, outboxEntry.getPayload().userId().toString(), outboxEntry.getPayload());
             outboxEntry.setStatus(OutboxEntryStatus.COMPLETED);
             outboxEntryRepository.save(outboxEntry);
         } catch (Exception e) {

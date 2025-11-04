@@ -1,6 +1,6 @@
 package com.tihon.outbox.scheduler;
 
-import com.tihon.outbox.events.EventType;
+import com.tihon.outbox.model.EventType;
 import com.tihon.outbox.model.OutboxEntry;
 import com.tihon.outbox.processor.EventProcessor;
 import com.tihon.outbox.service.OutboxService;

@@ -1,6 +1,6 @@
 package com.tihon.outbox.model;
 
-import com.tihon.outbox.events.EventType;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,7 +16,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.Type;
+
 import java.time.Instant;
 
 @Entity(name = "outbox")
@@ -33,9 +34,9 @@ public class OutboxEntry {
     @SequenceGenerator(name = "outbox_seq", sequenceName = "outbox_id_seq", allocationSize = 10)
     private Long id;
 
+    @Type(JsonType.class)
     @Column(name = "payload", columnDefinition = "jsonb")
-    @ColumnTransformer(read = "payload::text", write = "?::jsonb")
-    private String payload;
+    private OutboxEntryPayload payload;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
