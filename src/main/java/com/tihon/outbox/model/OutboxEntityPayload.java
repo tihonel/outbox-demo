@@ -1,6 +1,7 @@
 package com.tihon.outbox.model;
 
 import java.util.Map;
+import java.util.UUID;
 
-public record OutboxEntityPayload(Long userId, Map<String, String> changes) {
+public record OutboxEntityPayload(UUID userId, Map<String, String> changes) {
 }

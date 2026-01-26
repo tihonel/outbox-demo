@@ -1,4 +1,6 @@
 package com.tihon.outbox.dto;
 
-public record UserDto(Long id, String username) {
+import java.util.UUID;
+
+public record UserDto(UUID id, String username) {
 }

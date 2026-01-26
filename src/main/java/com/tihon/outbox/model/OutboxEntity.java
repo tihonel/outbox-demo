@@ -8,31 +8,21 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity(name = "outbox")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
-@EqualsAndHashCode
 public class OutboxEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "outbox_seq")
-    @SequenceGenerator(name = "outbox_seq", sequenceName = "outbox_id_seq", allocationSize = 10)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Type(JsonType.class)
     @Column(name = "payload", columnDefinition = "jsonb")

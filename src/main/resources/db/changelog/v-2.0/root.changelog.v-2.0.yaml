@@ -2,3 +2,7 @@ databaseChangeLog:
   - include:
       relativeToChangelogFile: true
       file: type-migration-outbox-table.sql
+
+  - include:
+      relativeToChangelogFile: true
+      file: id-bigint-to-uuid.sql

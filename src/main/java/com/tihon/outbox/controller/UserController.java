@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") long id, @RequestBody UserDtoWithoutId userDtoWithoutId) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") UUID id, @RequestBody UserDtoWithoutId userDtoWithoutId) {
         var user = userService.updateUser(userMapper.userDtoWithoutIdToUser(userDtoWithoutId, id));
         return ResponseEntity.ok(userMapper.userToUserDto(user));
     }

@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.annotation.KafkaListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -52,7 +53,7 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
         userEntity.setUsername("gaga");
 
         //when
-        Long userCreatedId = userService.createUser(userEntity).getId();
+        UUID userCreatedId = userService.createUser(userEntity).getId();
 
         //then
         var userCreated = userRepository.findById(userCreatedId).get();
