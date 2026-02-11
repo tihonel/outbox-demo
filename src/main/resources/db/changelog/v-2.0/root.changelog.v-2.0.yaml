@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       relativeToChangelogFile: true
       file: id-bigint-to-uuid.sql
+
+  - include:
+      relativeToChangelogFile: true
+      file: add-fields-outbox-table.sql

@@ -1,6 +1,5 @@
 package com.tihon.outbox.processor;
 
-import com.tihon.outbox.exception.UnsuccessfulSendEventToKafka;
 import com.tihon.outbox.model.EventType;
 import com.tihon.outbox.model.OutboxEntity;
 import com.tihon.outbox.model.OutboxEntityPayload;
@@ -12,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Component
@@ -21,8 +20,6 @@ import java.time.temporal.ChronoUnit;
 public class UpdateEventProcessor implements EventProcessor {
     @Value("${kafka.updateTopic}")
     private String updateTopic;
-    @Value("${outbox.period}")
-    private int outboxPeriod;
     private final KafkaTemplate<String, OutboxEntityPayload> kafkaTemplate;
     private final OutboxEntityRepository outboxEntityRepository;
 
@@ -30,14 +27,11 @@ public class UpdateEventProcessor implements EventProcessor {
     @Transactional
     public void execute(OutboxEntity outboxEntity) {
         try {
-            kafkaTemplate.send(updateTopic, outboxEntity.getPayload().userId().toString(), outboxEntity.getPayload());
+            kafkaTemplate.send(updateTopic, outboxEntity.getPayload().userId().toString(), outboxEntity.getPayload()).get();
             outboxEntity.setStatus(OutboxEntityStatus.DONE);
             outboxEntityRepository.save(outboxEntity);
-        } catch (Exception e) {
-            outboxEntity.setTimeToSend(Instant.now().plus(outboxPeriod, ChronoUnit.SECONDS));
-            outboxEntityRepository.save(outboxEntity);
-            log.error("Failed to send event to kafka. Event {} ", outboxEntity.getPayload(), e);
-            throw new UnsuccessfulSendEventToKafka(e.getMessage(), e);
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

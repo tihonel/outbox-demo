@@ -10,6 +10,7 @@ import com.tihon.outbox.model.OutboxEntityStatus;
 import com.tihon.outbox.model.UserEntity;
 import com.tihon.outbox.repository.OutboxEntityRepository;
 import com.tihon.outbox.repository.UserRepository;
+import com.tihon.outbox.scheduler.OutboxChecker;
 import com.tihon.outbox.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,9 +18,12 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.annotation.KafkaListener;
+
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +39,8 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
     UserRepository userRepository;
     @Autowired
     OutboxEntityRepository outboxEntityRepository;
+    @Autowired
+    OutboxChecker outboxChecker;
 
     private static final List<OutboxEntityPayload> events = new ArrayList<>();
 
@@ -70,6 +76,7 @@ public class OutboxIntegrationTest extends KafkaPostgresContainer {
         //when
         existingUserEntity.setUsername("abracadabra");
         userService.updateUser(existingUserEntity);
+        outboxChecker.takeMessagesInPendingAndProcessing();
 
         //then
         await().atMost(1, TimeUnit.MINUTES).until(

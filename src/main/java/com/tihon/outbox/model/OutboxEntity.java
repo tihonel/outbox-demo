@@ -35,6 +35,12 @@ public class OutboxEntity {
     @Column(name = "time_to_send")
     private Instant timeToSend;
 
+    @Column(name = "time_created")
+    private Instant timeCreated;
+
+    @Column(name = "time_updated")
+    private Instant timeUpdated;
+
     @Column(name = "event_type")
     @Enumerated(EnumType.STRING)
     private EventType eventType;

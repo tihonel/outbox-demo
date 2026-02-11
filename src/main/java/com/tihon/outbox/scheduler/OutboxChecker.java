@@ -5,6 +5,7 @@ import com.tihon.outbox.processor.EventProcessor;
 import com.tihon.outbox.service.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -17,7 +18,8 @@ public class OutboxChecker {
     private final OutboxService outboxService;
     private final List<EventProcessor> processors;
 
-    @Scheduled(fixedRateString = "${quantityMessagesForProcess}", timeUnit = TimeUnit.SECONDS)
+    @Async("outboxThreadPool")
+    @Scheduled(fixedRateString = "${outbox.period}", timeUnit = TimeUnit.SECONDS)
     public void takeMessagesInPendingAndProcessing() {
         List<OutboxEntity> outboxEntityList = outboxService.getOutboxMessagesInPendingForProcessing();
         outboxEntityList.forEach(this::processOutboxMessage);

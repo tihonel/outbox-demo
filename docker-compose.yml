@@ -1,17 +1,17 @@
 services:
   db:
-    image: 'postgres:latest'
+    image: 'postgres:18.1'
     restart: unless-stopped
     container_name: db
     environment:
-      POSTGRES_DB: user
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: ${POSTGRES_DB:-user}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
     ports:
       - "5432:5432"
 
   kafka-ui:
-    image: 'provectuslabs/kafka-ui:latest'
+    image: 'provectuslabs/kafka-ui:0.7.2'
     container_name: kafka-ui
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
@@ -24,7 +24,7 @@ services:
       - 8082:8080
 
   kafka-1:
-    image: 'confluentinc/cp-kafka'
+    image: 'confluentinc/cp-kafka:7.7.7'
     container_name: kafka-1
     environment:
       # KRaft settings
@@ -46,7 +46,7 @@ services:
       - 9091:9091
 
   kafka-2:
-    image: 'confluentinc/cp-kafka'
+    image: 'confluentinc/cp-kafka:7.7.7'
     container_name: kafka-2
     environment:
       # KRaft settings
@@ -68,7 +68,7 @@ services:
       - 9092:9092
 
   kafka-3:
-    image: 'confluentinc/cp-kafka'
+    image: 'confluentinc/cp-kafka:7.7.7'
     container_name: kafka-3
     environment:
       # KRaft settings

@@ -11,6 +11,9 @@ import java.util.UUID;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
     UserDto userToUserDto(UserEntity userEntity);
+
+    UserEntity userDtoToUserEntity(UserDto userDto);
+
     @Mapping(target = "id", source = "id")
     UserEntity userDtoWithoutIdToUser(UserDtoWithoutId userDto, UUID id);
 }
