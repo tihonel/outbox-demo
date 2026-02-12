@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,14 +25,19 @@ public class UserService {
     }
 
     @Transactional
-    public UserEntity updateUser(UserEntity userEntity) {
-        UserEntity updatedUserEntity = userRepository.save(userEntity);
+    public Optional<UserEntity> updateUser(UserEntity userEntity) {
+        return userRepository.findById(userEntity.getId())
+                .map(existingUser ->{
+                            existingUser.setUsername(userEntity.getUsername());
+                            userRepository.save(existingUser);
 
-        var payload = new OutboxEntityPayload(
-                updatedUserEntity.getId(), Map.of("username", updatedUserEntity.getUsername())
-        );
+                            var payload = new OutboxEntityPayload(
+                                    existingUser.getId(), Map.of("username", existingUser.getUsername())
+                            );
 
-        outboxService.saveNewMessage(payload, EventType.UPDATE_USER_DATA);
-        return updatedUserEntity;
+                            outboxService.saveNewMessage(payload, EventType.UPDATE_USER_DATA);
+
+                            return existingUser;
+                        });
     }
 }

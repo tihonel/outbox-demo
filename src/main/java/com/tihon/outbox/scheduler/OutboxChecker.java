@@ -26,15 +26,21 @@ public class OutboxChecker {
     }
 
     private void processOutboxMessage(OutboxEntity outboxEntity) {
-        processors.stream()
+        boolean processed = processors.stream()
                 .filter(x -> x.supports(outboxEntity.getEventType()))
                 .findFirst()
-                .ifPresent(x -> {
+                .map(x -> {
                     try {
                         x.execute(outboxEntity);
+                        return true;
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                });
+                })
+                .orElse(false);
+
+        if(!processed) {
+            log.warn("No processor found for eventType: {}", outboxEntity.getEventType());
+        }
     }
 }

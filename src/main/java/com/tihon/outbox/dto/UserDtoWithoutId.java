@@ -1,4 +1,7 @@
 package com.tihon.outbox.dto;
 
-public record UserDtoWithoutId(String username) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record UserDtoWithoutId(@NotNull @NotBlank String username) {
 }

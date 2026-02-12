@@ -1,18 +1,17 @@
 package com.tihon.outbox.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
 
 @Entity(name = "user_table")
-@Data
+@Table(name = "user_table")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

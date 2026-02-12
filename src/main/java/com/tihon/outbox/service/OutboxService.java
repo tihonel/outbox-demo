@@ -37,6 +37,6 @@ public class OutboxService {
     public List<OutboxEntity> getOutboxMessagesInPendingForProcessing() {
         List<OutboxEntity> entries = outboxEntityRepository.findAndSkipLockedMessages(quantityMessagesForProcess);
         entries.forEach(x -> x.setStatus(OutboxEntityStatus.RUNNING));
-        return entries;
+        return outboxEntityRepository.saveAll(entries);
     }
 }

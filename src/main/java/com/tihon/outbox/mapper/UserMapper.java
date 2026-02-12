@@ -14,6 +14,5 @@ public interface UserMapper {
 
     UserEntity userDtoToUserEntity(UserDto userDto);
 
-    @Mapping(target = "id", source = "id")
     UserEntity userDtoWithoutIdToUser(UserDtoWithoutId userDto, UUID id);
 }

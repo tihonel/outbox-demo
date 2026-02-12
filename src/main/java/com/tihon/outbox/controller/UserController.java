@@ -3,13 +3,14 @@ package com.tihon.outbox.controller;
 import com.tihon.outbox.dto.UserDto;
 import com.tihon.outbox.dto.UserDtoWithoutId;
 import com.tihon.outbox.mapper.UserMapper;
+import com.tihon.outbox.model.UserEntity;
 import com.tihon.outbox.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +20,16 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserDtoWithoutId userDtoWithoutId) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDtoWithoutId userDtoWithoutId) {
         var user = userService.createUser(userMapper.userDtoWithoutIdToUser(userDtoWithoutId, null));
         return ResponseEntity.ok(userMapper.userToUserDto(user));
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto) {
-        var user = userService.updateUser(userMapper.userDtoToUserEntity(userDto));
-        return ResponseEntity.ok(userMapper.userToUserDto(user));
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto) {
+        return userService.updateUser(userMapper.userDtoToUserEntity(userDto))
+                .map(userMapper::userToUserDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

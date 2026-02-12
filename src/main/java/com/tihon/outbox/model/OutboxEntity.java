@@ -1,24 +1,21 @@
 package com.tihon.outbox.model;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity(name = "outbox")
-@Data
+@Entity
+@Table(name = "outbox")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "id")
 public class OutboxEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
