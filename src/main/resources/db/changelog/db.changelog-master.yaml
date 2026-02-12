@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: tihonel
+      changes:
+        - tagDatabase:
+            tag: initial
+
+  - include:
+      relativeToChangelogFile: true
+      file: v-1.0/root.changelog.v-1.0.yaml
+
+  - changeSet:
+      id: 2
+      author: tihonel
+      changes:
+        - tagDatabase:
+            tag: first-review
+
+  - include:
+      relativeToChangelogFile: true
+      file: v-2.0/root.changelog.v-2.0.yaml
